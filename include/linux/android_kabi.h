@@ -33,7 +33,6 @@
 #define _ANDROID_KABI_H
 
 #include <linux/compiler.h>
-#include <linux/stringify.h>
 
 /*
  * Worker macros, don't use these, use the ones without a leading '_'
@@ -59,6 +58,7 @@
 
 #else
 
+#ifdef CONFIG_ANDROID_KABI_RESERVE
 #define _ANDROID_KABI_REPLACE(_orig, _new)			\
 	union {							\
 		_new;						\
@@ -67,10 +67,18 @@
 		};						\
 		__ANDROID_KABI_CHECK_SIZE_ALIGN(_orig, _new);	\
 	}
+#else
+#define _ANDROID_KABI_REPLACE(_orig, _new)			\
+	_new
+#endif
 
 #endif /* __GENKSYMS__ */
 
+#ifdef CONFIG_ANDROID_KABI_RESERVE
 #define _ANDROID_KABI_RESERVE(n)		u64 android_kabi_reserved##n
+#else
+#define _ANDROID_KABI_RESERVE(n)
+#endif
 
 
 /*
